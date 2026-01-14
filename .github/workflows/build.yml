@@ -23,7 +23,7 @@ jobs:
         run: |
           git clone https://gitlab.postmarketos.org/postmarketOS/pmbootstrap.git
           cd pmbootstrap
-          git reset --hard 2c2981bbc769e61545007ef87ef1c1a300a97cb9
+          git reset --hard f62981d9484fb00cc6669082a26a9b474964972a
       
       - name: Setup pmbootstrap
         run: |
