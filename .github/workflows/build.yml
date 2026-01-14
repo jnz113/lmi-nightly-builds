@@ -24,6 +24,7 @@ jobs:
           git clone https://gitlab.postmarketos.org/postmarketOS/pmbootstrap.git
           cd pmbootstrap
           git checkout 2c2981bbc769e61545007ef87ef1c1a300a97cb9
+          cd ~
           mkdir -p ~/.local/bin
           ln -s "$PWD/pmbootstrap/pmbootstrap.py" ~/.local/bin/pmbootstrap
           pmbootstrap --version
