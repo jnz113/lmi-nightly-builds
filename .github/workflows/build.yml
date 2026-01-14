@@ -3,7 +3,7 @@ on:
   push:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * 5' # Run every friday at midnight
+    - cron: '0 3 1,15 * *' # Run every Day 1 and 15 at midnight
 
 env:
   KERNEL_BRANCH: 6.12.1
@@ -30,13 +30,13 @@ jobs:
         run: |
           echo -e '\n\n' | pmbootstrap init || true
           cd ~/.local/var/pmbootstrap/cache_git/pmaports
-          git remote add mainlining https://github.com/yuweiyuan8/pmaports.git
+          git remote add mainlining https://github.com/jnz113/pmaports.git
           git fetch mainlining nikroks/alioth
           git reset --hard mainlining/nikroks/alioth
 
       - name: Clone kernel sources
         run: |
-          git clone https://github.com/yuweiyuan8/linux.git --single-branch --branch nikroks/alioth --depth 1 ./linux
+          git clone https://github.com/jnz113/linux.git --single-branch --branch nikroks/alioth --depth 1 ./linux
 
       - name: Choose any SM8250 device in pmbootstrap to build kernel
         run: |
@@ -68,4 +68,4 @@ jobs:
         with:
           name: xiaomi-lmi
           path: out/*-lmi.img*
-          retention-days: 7
+          retention-days: 14
