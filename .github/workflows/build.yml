@@ -10,7 +10,7 @@ env:
 
 jobs:
   build-image:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     steps:
       - name: Check out build configurations
         uses: actions/checkout@v4
@@ -19,13 +19,13 @@ jobs:
         run: |
           find . -type f -name "*.cfg" -exec sed -i "s|HOME|$(echo $HOME)|;s|NPROC|$(nproc)|" {} +
 
-      - name: Install pmbootstrap from git
+      - name: Clone pmbootstrap sources
         run: |
           git clone https://gitlab.postmarketos.org/postmarketOS/pmbootstrap.git
-          cd pmbootstrap
-          git reset --hard f62981d9484fb00cc6669082a26a9b474964972a
+          # cd pmbootstrap
+          # git reset --hard f62981d9484fb00cc6669082a26a9b474964972a
       
-      - name: Setup pmbootstrap
+      - name: Set up pmbootstrap
         run: |
           mkdir -p ~/.local/bin
           ln -s "$PWD/pmbootstrap/pmbootstrap.py" ~/.local/bin/pmbootstrap
@@ -43,7 +43,7 @@ jobs:
         run: |
           git clone https://github.com/jnz113/linux.git --single-branch --branch nikroks/alioth --depth 1 ./linux
 
-      - name: Choose any SM8250 device in pmbootstrap to build kernel
+      - name: Choose lmi device in pmbootstrap to build kernel
         run: |
           cp xiaomi-lmi.cfg ~/.config/pmbootstrap_v3.cfg
 
@@ -54,7 +54,7 @@ jobs:
           source ../pmbootstrap/helpers/envkernel.sh
           make defconfig sm8250.config
           make -j$(nproc)
-          pmbootstrap build --envkernel linux-postmarketos-qcom-sm8250-lmi
+          pmbootstrap build --envkernel linux-postmarketos-qcom-sm8250-lmi --gcc
 
       - name: Create artifact directory
         run: |
