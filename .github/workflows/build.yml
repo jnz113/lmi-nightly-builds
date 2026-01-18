@@ -47,15 +47,15 @@ jobs:
         run: |
           cp xiaomi-lmi.cfg ~/.config/pmbootstrap_v3.cfg
 
-      - name: Create artifact directory and Compile kernel with envkernel
+      - name: Create artifact directory and Compile
         run: |
-          mkdir out
+          mkdir -p out
           cd linux
           shopt -s expand_aliases
           source ../pmbootstrap/helpers/envkernel.sh
           make defconfig sm8250.config
-          make -j$(nproc)
-          pmbootstrap build --envkernel linux-postmarketos-qcom-sm8250-lmi > out/build-kernel-log.txt 2>&1 
+          make -j$(nproc) > ../out/kernel-make-log.txt 2>&1
+          pmbootstrap build --envkernel linux-postmarketos-qcom-sm8250-lmi ../out/kernel-build-log.txt 2>&1
 
       - name: Move log to Out folder on failure 
         if: failure() 
