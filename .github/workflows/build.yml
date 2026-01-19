@@ -36,7 +36,7 @@ jobs:
           echo -e '\n\n' | pmbootstrap init || true
           cd ~/.local/var/pmbootstrap/cache_git/pmaports
 
-          git clone --depth=1 https://github.com/yuweiyuan8/pmaports.git /tmp/pmaports
+          git clone --depth=1 https://github.com/jnz113/pmaports.git /tmp/pmaports
           cp -r /tmp/pmaports/device/testing/*lmi* ./device/testing/
           #git remote add mainlining https://github.com/jnz113/pmaports.git
           #git fetch mainlining nikroks/alioth
