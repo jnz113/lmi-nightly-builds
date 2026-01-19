@@ -59,20 +59,19 @@ jobs:
           make defconfig sm8250.config
           make -j$(nproc) > /home/runner/out/kernel-make-log.txt 2>&1
           pmbootstrap build --envkernel linux-postmarketos-qcom-sm8250-lmi > /home/runner/out/kernel-build-log.txt 2>&1
-
-      - name: Move log to Out folder on failure 
-        if: failure() 
-        run: | 
-          cp /home/runner/.local/var/pmbootstrap/log.txt /home/runner/out/pmbootstrap-log.txt
       
       - name: Build xiaomi-lmi
         run: |
           cp xiaomi-lmi.cfg ~/.config/pmbootstrap_v3.cfg
           pmbootstrap install --password 147147 > /home/runner/out/install-console-log.txt 2>&1
           pmbootstrap export
-          cp /home/runner/.local/var/pmbootstrap/log.txt /home/runner/out/install-log.txt
           cp /tmp/postmarketOS-export/boot.img /home/runner/out/boot-xiaomi-lmi.img
           cp /tmp/postmarketOS-export/xiaomi-lmi.img /home/runner/out/rootfs-xiaomi-lmi.img
+      
+      - name: Move log to Out folder on failure 
+        if: failure() 
+        run: | 
+          cp /home/runner/.local/var/pmbootstrap/log.txt /home/runner/out/pmbootstrap-log.txt
       
       - name: Upload logs on failure
         if: failure()
