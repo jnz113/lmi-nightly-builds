@@ -86,5 +86,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: xiaomi-lmi
-          path: out/*-lmi.img*
+          path: /home/runner/out/*-lmi.img*
           retention-days: 14
