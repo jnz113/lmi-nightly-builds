@@ -63,6 +63,7 @@ jobs:
       - name: Build xiaomi-lmi
         run: |
           cp xiaomi-lmi.cfg ~/.config/pmbootstrap_v3.cfg
+          pmbootstrap checksum device-xiaomi-lmi > /home/runner/out/install-console-log.txt 2>&1
           pmbootstrap install --password 147147 > /home/runner/out/install-console-log.txt 2>&1
           pmbootstrap export
           cp /tmp/postmarketOS-export/boot.img /home/runner/out/boot-xiaomi-lmi.img
