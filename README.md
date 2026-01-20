@@ -1,4 +1,4 @@
-# Nightly SM8250 PostmarketOS Builds
+# Nightly xiaomi-lmi PostmarketOS Builds
 
 This repository contains workflows and configurations to automatically build PostmarketOS edge images for SM8250 devices supported by our mainline kernel fork. These images are intended for testing purposes only and should make testing more accessible to people without the capabilities to compile the kernel from source.
 
@@ -11,3 +11,9 @@ The default user is called `user`, the password is `147147`, just like on offici
 ## Downloading
 
 Head to the [Actions tab](https://github.com/N1kroks/alioth-nightly-builds/actions), select the most recent successful run and download the artifact for your device. Extract the Zip, de-compress the rootfs and you're ready to flash!
+
+## Tips
+
+For xiaomi-lmi, when migrating from the stock Android system, remember to wipe the dtbo partition.
+
+Flash the rootfs image to the super partition, and the boot image to the boot partition.
