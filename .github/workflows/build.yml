@@ -19,14 +19,9 @@ jobs:
         run: |
           find . -type f -name "*.cfg" -exec sed -i "s|HOME|$(echo $HOME)|;s|NPROC|$(nproc)|" {} +
 
-      - name: Clone pmbootstrap sources
-        run: |
-          git clone https://gitlab.postmarketos.org/postmarketOS/pmbootstrap.git
-          # cd pmbootstrap
-          # git reset --hard f62981d9484fb00cc6669082a26a9b474964972a
-      
       - name: Set up pmbootstrap
         run: |
+          git clone https://gitlab.postmarketos.org/postmarketOS/pmbootstrap.git
           mkdir -p ~/.local/bin
           ln -s "$PWD/pmbootstrap/pmbootstrap.py" ~/.local/bin/pmbootstrap
           pmbootstrap --version
@@ -35,7 +30,6 @@ jobs:
         run: |
           echo -e '\n\n' | pmbootstrap init || true
           cd ~/.local/var/pmbootstrap/cache_git/pmaports
-
           git clone --depth=1 https://github.com/jnz113/pmaports.git /tmp/pmaports
           cp -r /tmp/pmaports/device/testing/*lmi* ./device/testing/
           #git remote add mainlining https://github.com/jnz113/pmaports.git
@@ -52,36 +46,36 @@ jobs:
 
       - name: Create artifact directory and Compile
         run: |
-          mkdir -p /home/runner/out/
           cd linux
           shopt -s expand_aliases
           source ../pmbootstrap/helpers/envkernel.sh
           make defconfig sm8250.config
-          make -j$(nproc) > /home/runner/out/kernel-make-log.txt 2>&1
-          pmbootstrap build --envkernel linux-postmarketos-qcom-sm8250-lmi > /home/runner/out/kernel-build-log.txt 2>&1
+          mkdir -p /home/runner/out/
+          make -j$(nproc) > >(tee -a /home/runner/out/stdout.txt) 2> >(tee -a /home/runner/out/stderr.txt >&2)
+          pmbootstrap build --envkernel linux-postmarketos-qcom-sm8250-lmi > >(tee -a /home/runner/out/stdout.txt) 2> >(tee -a /home/runner/out/stderr.txt >&2)
       
       - name: Build xiaomi-lmi
         run: |
-          cp xiaomi-lmi.cfg ~/.config/pmbootstrap_v3.cfg
-          pmbootstrap checksum device-xiaomi-lmi > /home/runner/out/install-console-log.txt 2>&1
-          pmbootstrap install --password 147147 > /home/runner/out/install-console-log.txt 2>&1
+          pmbootstrap checksum device-xiaomi-lmi > >(tee -a /home/runner/out/stdout.txt) 2> >(tee -a /home/runner/out/stderr.txt >&2)
+          pmbootstrap install --password 147147 > >(tee -a /home/runner/out/stdout.txt) 2> >(tee -a /home/runner/out/stderr.txt >&2)
           pmbootstrap export
           cp /tmp/postmarketOS-export/boot.img /home/runner/out/boot-xiaomi-lmi.img
           cp /tmp/postmarketOS-export/xiaomi-lmi.img /home/runner/out/rootfs-xiaomi-lmi.img
       
-      - name: Move log to Out folder on failure 
-        if: failure() 
+      - name: Move log to Out folder
+        if: always()
         run: | 
           cp /home/runner/.local/var/pmbootstrap/log.txt /home/runner/out/pmbootstrap-log.txt
       
-      - name: Upload logs on failure
-        if: failure()
-        uses: actions/upload-artifact@v4 
-        with: 
-          name: output-failure-logs
-          path: /home/runner/out/*.txt*
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: output-logs-${{ job.status }}
+          path: /home/runner/out/*.txt
           retention-days: 14
-      
+
+          
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
