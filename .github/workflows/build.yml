@@ -51,28 +51,38 @@ jobs:
 
       - name: Compile kernel with envkernel
         run: |
+          mkdir -p /home/runner/out/
           cd linux
           shopt -s expand_aliases
           source ../pmbootstrap/helpers/envkernel.sh
           make defconfig sm8250.config
-          make -j$(nproc) LLVM=0
-          pmbootstrap build --envkernel linux-postmarketos-qcom-sm8250-lmi
-
-      - name: Create artifact directory
-        run: |
-          mkdir out
+          make -j$(nproc) > >(tee -a /home/runner/out/stdout.txt) 2> >(tee -a /home/runner/out/stderr.txt >&2)
+          pmbootstrap build --envkernel linux-postmarketos-qcom-sm8250-lmi > >(tee -a /home/runner/out/stdout.txt) 2> >(tee -a /home/runner/out/stderr.txt >&2)
 
       - name: Build xiaomi-lmi
         run: |
           cp xiaomi-lmi.cfg ~/.config/pmbootstrap_v3.cfg
           pmbootstrap install --password 147147
           pmbootstrap export
-          cp /tmp/postmarketOS-export/boot.img out/boot-xiaomi-lmi.img
-          cp /tmp/postmarketOS-export/xiaomi-lmi.img out/rootfs-xiaomi-lmi.img
+          cp /tmp/postmarketOS-export/boot.img /home/runner/out/boot-xiaomi-lmi.img
+          cp /tmp/postmarketOS-export/xiaomi-lmi.img /home/runner/out/rootfs-xiaomi-lmi.img
+
+      - name: Move log to Out folder
+        if: always()
+        run: | 
+          cp /home/runner/.local/var/pmbootstrap/log.txt /home/runner/out/pmbootstrap-log.txt
+      
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: output-logs-${{ job.status }}
+          path: /home/runner/out/*.txt
+          retention-days: 14
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: xiaomi-lmi
-          path: out/*-lmi.img*
+          path: /home/runner/out/*-lmi.img*
           retention-days: 14
