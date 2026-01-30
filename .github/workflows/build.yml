@@ -35,6 +35,8 @@ jobs:
         run: |
           echo -e '\n\n' | pmbootstrap init || true
           cd ~/.local/var/pmbootstrap/cache_git/pmaports
+          # Use specific(Dec 30 2025) commit to avoid issues with future changes
+          git checkout d8d8e19235e9a480c284ee6f7405ee3e60c3c132
           git remote add mainlining https://github.com/jnz113/pmaports.git
           git fetch mainlining nikroks/alioth
           git reset --hard mainlining/nikroks/alioth
@@ -53,7 +55,7 @@ jobs:
           shopt -s expand_aliases
           source ../pmbootstrap/helpers/envkernel.sh
           make defconfig sm8250.config
-          make -j$(nproc)
+          make -j$(nproc) LLVM=0
           pmbootstrap build --envkernel linux-postmarketos-qcom-sm8250-lmi
 
       - name: Create artifact directory
